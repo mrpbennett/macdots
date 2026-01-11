@@ -1,0 +1,38 @@
+# --- Taps ---
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/services"
+tap "hashicorp/tap"
+tap "homebrew/cask-fonts"
+tap "FelixKratz/formulae"
+
+# --- Terminal Tools ---
+brew "yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick font-symbols-only-nerd-font"
+brew "eza"
+brew "lazygit"
+brew "neovim"
+
+brew "python"
+brew "pipx"
+
+brew "kubectl"
+brew "derailed/k9s/k9s"
+brew "helm"
+
+brew "television"
+
+# --- Utils ---
+brew "borders"
+
+# --- GUI apps (casks) ---
+cask "ghostty"
+cask "zed"
+cask "nikitabobko/tap/aerospace"
+
+# --- Fonts ---
+cask "font-jetbrains-mono"
+
+# --- Mac App Store apps (optional) ---
+brew "mas"
+
+mas "Slack", id: 803453959
