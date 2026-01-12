@@ -117,12 +117,12 @@
       "space c r ": "editor::Rename",
       // Chat with AI
       "space a a": "agent::ToggleFocus",
+      "space a t": "agent::AddSelectionToThread", // add selection to AI
       "ctrl-\\": "workspace::ToggleRightDock",
       "cmd-k": "workspace::ToggleRightDock",
       "space a e": "assistant::InlineAssist",
       "cmd-l": "assistant::InlineAssist",
       // "space a t": "workspace::ToggleRightDock",
-      "space a t": "agent::AddSelectionToThread", // add selection to AI
       "space g h d": "editor::ExpandAllDiffHunks",
       "space g h D": "git::Diff",
       "space g h r": "git::Restore",
@@ -140,7 +140,7 @@
       "space s w": "buffer_search::Deploy",
       // Search word under cursor in all panes
       "space s W": "pane::DeploySearch",
-      // Tab things. Almost as good as harpoon.
+      // Tab things. Almost as good as harpoon
       "space 1": ["pane::ActivateItem", 0],
       "space 2": ["pane::ActivateItem", 1],
       "space 3": ["pane::ActivateItem", 2],

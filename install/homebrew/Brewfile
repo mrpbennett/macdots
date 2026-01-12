@@ -11,6 +11,7 @@ brew "yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick fo
 brew "eza"
 brew "lazygit"
 brew "neovim"
+brew "bat"
 
 brew "python"
 brew "pipx"
