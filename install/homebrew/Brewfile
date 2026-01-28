@@ -29,6 +29,8 @@ brew "borders"
 cask "ghostty"
 cask "zed"
 cask "nikitabobko/tap/aerospace"
+cask "raycast"
+brew "appcleaner"
 
 # --- Fonts ---
 cask "font-jetbrains-mono"

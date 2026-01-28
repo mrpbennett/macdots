@@ -1,4 +1,4 @@
-#!/bin/zsh
+#/bin/zsh
 
 
 OUT="${XDG_CONFIG_HOME:-$HOME/Library/Application Support}/k9s/skins"
