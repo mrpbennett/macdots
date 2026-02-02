@@ -1,33 +1,57 @@
-theme = catppuccin-macchiato.conf
+# $HOME/.config/ghostty/config
 
-# Font
-font-family = "JetBrainsMono Nerd Font Mono"
-font-style = Regular
-font-size = 12
+confirm-close-surface = false
+macos-option-as-alt = true
+unfocused-split-opacity = 0.30
 
-# Window
-window-padding-x = 14
-window-padding-y = 14
-confirm-close-surface=false
-resize-overlay = never
-
-# Cursor stlying
-cursor-style = "block"
-cursor-style-blink = false
-shell-integration-features = no-cursor
-
-# Keyboard bindings
-keybind = f11=toggle_fullscreen
-keybind = shift+insert=paste_from_clipboard
-keybind = control+insert=copy_to_clipboard
-keybind = super+control+shift+alt+arrow_down=resize_split:down,100
-keybind = super+control+shift+alt+arrow_up=resize_split:up,100
-keybind = super+control+shift+alt+arrow_left=resize_split:left,100
-keybind = super+control+shift+alt+arrow_right=resize_split:right,100
-
-# Shell
-command = /usr/bin/zsh --login --interactive
+# ============================================================================
+# MULTIPLEXER type settings
+# ============================================================================
+shell-integration = zsh
+window-save-state = always
+focus-follows-mouse = true
 term = "xterm-256color"
 
-# Slowdown mouse scrolling
-mouse-scroll-multiplier = 0.95
+# ============================================================================
+# APPEARANCE
+# ============================================================================
+theme = light:Catppuccin Latte, dark:Catppuccin Mocha
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 15
+background-blur-radius = 20
+mouse-hide-while-typing = true
+window-decoration = true
+
+# ============================================================================
+# KEYBINDINGS - Taking advantage of Home Row Mods
+#
+# A: ctrl S: alt D: super F: shift
+#
+# J: shift K: super L: alt ;: ctrl
+# ============================================================================
+
+# Split navigation
+keybind = super+shift+h=goto_split:left
+keybind = super+shift+j=goto_split:bottom
+keybind = super+shift+k=goto_split:top
+keybind = super+shift+l=goto_split:right
+
+# Split generation
+keybind = alt+super+h=new_split:left
+keybind = alt+super+j=new_split:down
+keybind = alt+super+k=new_split:up
+keybind = alt+super+l=new_split:right
+keybind = alt+super+f=toggle_split_zoom
+
+# Split resizing
+keybind = ctrl+shift+h=resize_split:left,50
+keybind = ctrl+shift+l=resize_split:right,50
+keybind = ctrl+shift+j=resize_split:down,50
+keybind = ctrl+shift+k=resize_split:up,50
+
+# Close current split
+keybind = super+shift+x=close_surface
+
+# Tab navigation
+keybind = super+shift+n=next_tab
+keybind = super+shift+p=previous_tab

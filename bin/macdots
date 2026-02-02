@@ -1,0 +1,371 @@
+#!/bin/zsh
+#
+# macdots CLI
+# Main entry point for macdots management
+#
+
+set -e
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MACDOTS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Source the core library
+source "${MACDOTS_ROOT}/lib/core.sh"
+
+# ==============================================================================
+# CLI Functions
+# ==============================================================================
+
+show_help() {
+    cat << EOF
+macdots - macOS dotfiles management tool
+
+USAGE:
+    macdots <command> [options]
+
+COMMANDS:
+    install              Install macdots configuration
+    uninstall            Remove macdots symlinks and restore backups
+    update              Update macdots from git and re-run installers
+    doctor              Check system health and configuration
+    backup              Create manual backup of current configs
+    restore <timestamp> Restore configs from backup
+    status              Show installation status
+    help                Show this help message
+
+INSTALL OPTIONS:
+    --all               Install everything (default)
+    --homebrew          Install Homebrew and packages
+    --terminal          Install terminal tools only
+    --desktop           Install desktop applications only
+    --shell             Install shell configuration only
+    --keyboard          Install keyboard customizations
+    --skip-backup       Skip creating backups
+    --dry-run           Show what would be done without executing
+    --force             Force re-installation even if already installed
+    --yes               Skip confirmation prompts
+
+EXAMPLES:
+    macdots install                     # Install everything
+    macdots install --terminal          # Install only terminal tools
+    macdots install --all --dry-run     # Preview full installation
+    macdots doctor                      # Check system status
+    macdots backup                      # Manual backup
+
+For more information: https://github.com/mrpbennett/macdots
+EOF
+}
+
+show_status() {
+    macdots_section "macdots Status"
+    
+    # Check if macdots is installed
+    if [[ -d "$MACDOTS_ROOT" ]]; then
+        macdots_success "macdots is installed at: $MACDOTS_ROOT"
+        
+        # Show installed components
+        if [[ -f "${MACDOTS_ROOT}/.install_state" ]]; then
+            macdots_info "Installed components:"
+            while IFS= read -r component; do
+                echo "  • $component"
+            done < "${MACDOTS_ROOT}/.install_state"
+        else
+            macdots_warn "No installation state found (may need to run install)"
+        fi
+        
+        # Show recent backups
+        if [[ -d "$MACDOTS_BACKUP_DIR" ]]; then
+            local backup_count
+            backup_count=$(find "$MACDOTS_BACKUP_DIR" -type d -name "20*" | wc -l)
+            macdots_info "Backups available: $backup_count"
+            if [[ $backup_count -gt 0 ]]; then
+                macdots_info "Latest backup: $(ls -1 "$MACDOTS_BACKUP_DIR" | sort -r | head -1)"
+            fi
+        fi
+    else
+        macdots_error "macdots is not installed"
+        macdots_info "Run: curl -fsSL https://raw.githubusercontent.com/mrpbennett/macdots/main/boot.sh | zsh"
+    fi
+}
+
+cmd_doctor() {
+    macdots_section "Running System Check"
+    local issues=0
+    
+    # Check macOS
+    if macdots_is_macos; then
+        macdots_success "Running on macOS ($(uname -m))"
+    else
+        macdots_error "Not running on macOS"
+        ((issues++))
+    fi
+    
+    # Check Homebrew
+    if macdots_command_exists brew; then
+        macdots_success "Homebrew is installed"
+    else
+        macdots_warn "Homebrew is not installed"
+        ((issues++))
+    fi
+    
+    # Check essential tools
+    local tools=("git" "zsh" "nvim" "kubectl")
+    for tool in "${tools[@]}"; do
+        if macdots_command_exists "$tool"; then
+            macdots_success "$tool is installed"
+        else
+            macdots_warn "$tool is not installed"
+            ((issues++))
+        fi
+    done
+    
+    # Check symlinks
+    macdots_info "Checking symlinks..."
+    local symlinks=(
+        "$HOME/.config/zed:${MACDOTS_ROOT}/configs/zed"
+        "$HOME/.config/aerospace:${MACDOTS_ROOT}/configs/aerospace"
+        "$HOME/.config/nvim:${MACDOTS_ROOT}/configs/nvim"
+        "$HOME/.config/yazi:${MACDOTS_ROOT}/configs/yazi"
+        "$HOME/.config/k9s:${MACDOTS_ROOT}/configs/k9s"
+    )
+    
+    for link_info in "${symlinks[@]}"; do
+        local target="${link_info%%:*}"
+        local source="${link_info##*:}"
+        
+        if [[ -L "$target" ]]; then
+            local actual
+            actual=$(readlink "$target")
+            if [[ "$actual" == "$source" ]]; then
+                macdots_success "Symlink correct: $(basename "$target")"
+            else
+                macdots_warn "Symlink mismatch: $(basename "$target")"
+                ((issues++))
+            fi
+        elif [[ -e "$target" ]]; then
+            macdots_warn "Regular directory (not symlink): $(basename "$target")"
+        else
+            macdots_info "Missing: $(basename "$target")"
+        fi
+    done
+    
+    # Summary
+    echo ""
+    if [[ $issues -eq 0 ]]; then
+        macdots_success "System check passed! Everything looks good."
+    else
+        macdots_warn "Found $issues issue(s). Run 'macdots install' to fix."
+    fi
+}
+
+cmd_backup() {
+    macdots_section "Creating Manual Backup"
+    
+    local timestamp
+    timestamp=$(date '+%Y%m%d-%H%M%S')
+    local backup_dir="${MACDOTS_BACKUP_DIR}/${timestamp}"
+    
+    mkdir -p "$backup_dir"
+    
+    # Backup current configs
+    local configs=(
+        "$HOME/.config/nvim"
+        "$HOME/.config/zed"
+        "$HOME/.config/aerospace"
+        "$HOME/.config/yazi"
+        "$HOME/.config/k9s"
+        "$HOME/.zshrc"
+        "$HOME/.zshenv"
+    )
+    
+    for config in "${configs[@]}"; do
+        if [[ -e "$config" ]]; then
+            macdots_backup "$config"
+        fi
+    done
+    
+    macdots_success "Backup created at: $backup_dir"
+}
+
+cmd_restore() {
+    local timestamp="$1"
+    
+    if [[ -z "$timestamp" ]]; then
+        # Show available backups
+        macdots_section "Available Backups"
+        
+        if [[ ! -d "$MACDOTS_BACKUP_DIR" ]]; then
+            macdots_error "No backups directory found"
+            return 1
+        fi
+        
+        local backups
+        backups=$(ls -1 "$MACDOTS_BACKUP_DIR" | sort -r)
+        
+        if [[ -z "$backups" ]]; then
+            macdots_warn "No backups found"
+            return 1
+        fi
+        
+        echo "Available backups:"
+        echo "$backups" | nl
+        
+        macdots_info "Usage: macdots restore <timestamp>"
+        return 0
+    fi
+    
+    local backup_path="${MACDOTS_BACKUP_DIR}/${timestamp}"
+    
+    if [[ ! -d "$backup_path" ]]; then
+        macdots_error "Backup not found: $timestamp"
+        return 1
+    fi
+    
+    if ! macdots_confirm "This will replace your current configs with backup from $timestamp. Continue?"; then
+        macdots_info "Restore cancelled"
+        return 0
+    fi
+    
+    macdots_section "Restoring from Backup"
+    
+    # Restore each config
+    for item in "$backup_path"/*; do
+        if [[ -e "$item" ]]; then
+            local name
+            name=$(basename "$item")
+            local target
+            
+            case "$name" in
+                nvim|zed|aerospace|yazi|k9s)
+                    target="$HOME/.config/$name"
+                    ;;
+                .zshrc|.zshenv)
+                    target="$HOME/$name"
+                    ;;
+                *)
+                    target="$HOME/.config/$name"
+                    ;;
+            esac
+            
+            if [[ -e "$target" ]]; then
+                rm -rf "$target"
+            fi
+            
+            cp -R "$item" "$target"
+            macdots_success "Restored: $name"
+        fi
+    done
+    
+    macdots_success "Restore complete!"
+}
+
+cmd_uninstall() {
+    macdots_section "Uninstalling macdots"
+    
+    if ! macdots_confirm "This will remove all macdots symlinks. Your backups will be kept. Continue?"; then
+        macdots_info "Uninstall cancelled"
+        return 0
+    fi
+    
+    # Remove symlinks
+    local symlinks=(
+        "$HOME/.config/zed"
+        "$HOME/.config/aerospace"
+        "$HOME/.config/nvim"
+        "$HOME/.config/yazi"
+        "$HOME/.config/k9s"
+    )
+    
+    for link in "${symlinks[@]}"; do
+        if [[ -L "$link" ]]; then
+            rm "$link"
+            macdots_info "Removed: $link"
+        fi
+    done
+    
+    # Remove state file
+    if [[ -f "${MACDOTS_ROOT}/.install_state" ]]; then
+        rm "${MACDOTS_ROOT}/.install_state"
+    fi
+    
+    macdots_success "Uninstall complete!"
+    macdots_info "Backups are preserved in: $MACDOTS_BACKUP_DIR"
+}
+
+cmd_update() {
+    macdots_section "Updating macdots"
+    
+    if [[ ! -d "$MACDOTS_ROOT/.git" ]]; then
+        macdots_error "Not a git repository. Cannot update."
+        return 1
+    fi
+    
+    cd "$MACDOTS_ROOT"
+    
+    macdots_step "Fetching latest changes..."
+    if git fetch origin; then
+        macdots_success "Fetched latest changes"
+    else
+        macdots_error "Failed to fetch changes"
+        return 1
+    fi
+    
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    
+    macdots_step "Pulling updates..."
+    if git pull origin "$current_branch"; then
+        macdots_success "Updated to latest version"
+    else
+        macdots_error "Failed to pull updates. You may have local changes."
+        return 1
+    fi
+    
+    macdots_info "Re-running installer..."
+    source "${MACDOTS_ROOT}/install.sh"
+}
+
+# ==============================================================================
+# Main Entry Point
+# ==============================================================================
+
+main() {
+    local command="${1:-install}"
+    shift || true
+    
+    case "$command" in
+        install)
+            # Pass all arguments to install.sh
+            source "${MACDOTS_ROOT}/install.sh" "$@"
+            ;;
+        uninstall)
+            cmd_uninstall
+            ;;
+        update)
+            cmd_update
+            ;;
+        doctor)
+            cmd_doctor
+            ;;
+        backup)
+            cmd_backup
+            ;;
+        restore)
+            cmd_restore "$1"
+            ;;
+        status)
+            show_status
+            ;;
+        help|--help|-h)
+            show_help
+            ;;
+        *)
+            macdots_error "Unknown command: $command"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

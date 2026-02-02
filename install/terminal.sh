@@ -1,3 +1,12 @@
 #!/bin/zsh
+#
+# Terminal Tools Installation Orchestrator
+# Runs all terminal installer scripts
+#
 
-for installer in ~/.local/share/macdots/install/terminal/*.sh; do source $installer; done
+# Source the core library
+source "${MACDOTS_ROOT}/lib/core.sh"
+
+macdots_section "Installing Terminal Tools"
+
+macdots_run_installers "${MACDOTS_ROOT}/install/terminal"

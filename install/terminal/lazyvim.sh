@@ -1,23 +1,35 @@
 #!/bin/zsh
+#
+# Neovim (LazyVim) Configuration Installer
+#
 
-# Backup existing nvim configuration if it exists
-if [ -d ~/.config/nvim ]; then
-    echo "Backing up existing nvim config..."
-    mv ~/.config/nvim ~/.config/nvim.bak
-fi
+set -e
 
-# optional but recommended - backup other nvim directories
-[ -d ~/.local/share/nvim ] && mv ~/.local/share/nvim ~/.local/share/nvim.bak
-[ -d ~/.local/state/nvim ] && mv ~/.local/state/nvim ~/.local/state/nvim.bak
-[ -d ~/.cache/nvim ] && mv ~/.cache/nvim ~/.cache/nvim.bak
+# Source the core library
+source "${MACDOTS_ROOT}/lib/core.sh"
 
-
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-
-rm -rf ~/.config/nvim/.git
-
-# Copy custom configuration if it exists
-if [ -d ~/.local/share/macdots/configs/neovim ]; then
-    echo "Copying custom neovim configuration..."
-    cp -R ~/.local/share/macdots/configs/neovim/* ~/.config/nvim/
+if command -v nvim >/dev/null 2>&1; then
+    macdots_step "Installing Neovim configuration..."
+    
+    # Backup existing nvim state directories
+    if [ -d ~/.local/share/nvim ]; then
+        macdots_backup ~/.local/share/nvim
+        rm -rf ~/.local/share/nvim
+    fi
+    if [ -d ~/.local/state/nvim ]; then
+        macdots_backup ~/.local/state/nvim
+        rm -rf ~/.local/state/nvim
+    fi
+    if [ -d ~/.cache/nvim ]; then
+        macdots_backup ~/.cache/nvim
+        rm -rf ~/.cache/nvim
+    fi
+    
+    # Use symlink for the nvim config directory for live editing
+    macdots_symlink "${MACDOTS_ROOT}/configs/nvim" "${HOME}/.config/nvim"
+    
+    macdots_success "Neovim configuration installed"
+    macdots_info "Run 'nvim' to start and let LazyVim install plugins"
+else
+    macdots_warn "Neovim not found, skipping configuration"
 fi
