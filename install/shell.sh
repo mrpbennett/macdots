@@ -58,9 +58,9 @@ export KEYTIMEOUT=1
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR=\'vim\'
+   export EDITOR='vim'
 else
-   export EDITOR=\'nvim\'
+   export EDITOR='nvim'
 fi
 
 # Source macdots zsh configuration
