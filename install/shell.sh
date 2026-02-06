@@ -37,6 +37,11 @@ fi
 # Symlink the entire zsh config directory
 macdots_symlink "${MACDOTS_ROOT}/configs/zsh" "$HOME/.config/zsh"
 
+# Symlink starship config if it exists
+if [[ -f "${MACDOTS_ROOT}/configs/starship.toml" ]]; then
+    macdots_symlink "${MACDOTS_ROOT}/configs/starship.toml" "$HOME/.config/starship.toml"
+fi
+
 # Create .zshrc that sources our config
 ZSHRC_CONTENT='export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="nvim"
@@ -54,8 +59,6 @@ source $ZSH/oh-my-zsh.sh
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1
-
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 if [[ -n $SSH_CONNECTION ]]; then
    export EDITOR='vim'
@@ -93,11 +96,6 @@ if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighti
         "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" 2>/dev/null || true
 fi
 
-# Change default shell to zsh if not already
-if [[ "$SHELL" != "$(which zsh)" ]]; then
-    macdots_step "Changing default shell to zsh..."
-    chsh -s "$(which zsh)" || macdots_warn "Could not change default shell automatically"
-fi
 
 macdots_success "Shell configuration complete"
 macdots_info "Please restart your terminal or run: source ~/.zshrc"

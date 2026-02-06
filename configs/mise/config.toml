@@ -1,0 +1,7 @@
+# mise global tool configuration
+# Tools will be automatically installed when entering directories
+
+[tools]
+python = "latest"
+go = "latest"
+node = "lts"

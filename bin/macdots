@@ -7,7 +7,7 @@
 set -e
 
 # Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 MACDOTS_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Source the core library
@@ -123,11 +123,16 @@ cmd_doctor() {
     # Check symlinks
     macdots_info "Checking symlinks..."
     local symlinks=(
+        "$HOME/.config/zsh:${MACDOTS_ROOT}/configs/zsh"
         "$HOME/.config/zed:${MACDOTS_ROOT}/configs/zed"
         "$HOME/.config/aerospace:${MACDOTS_ROOT}/configs/aerospace"
         "$HOME/.config/nvim:${MACDOTS_ROOT}/configs/nvim"
         "$HOME/.config/yazi:${MACDOTS_ROOT}/configs/yazi"
         "$HOME/.config/k9s:${MACDOTS_ROOT}/configs/k9s"
+        "$HOME/.config/ghostty:${MACDOTS_ROOT}/configs/ghostty"
+        "$HOME/.config/karabiner:${MACDOTS_ROOT}/configs/karabiner"
+        "$HOME/.config/mise:${MACDOTS_ROOT}/configs/mise"
+        "$HOME/.config/starship.toml:${MACDOTS_ROOT}/configs/starship.toml"
     )
     
     for link_info in "${symlinks[@]}"; do
@@ -170,11 +175,16 @@ cmd_backup() {
     
     # Backup current configs
     local configs=(
+        "$HOME/.config/zsh"
         "$HOME/.config/nvim"
         "$HOME/.config/zed"
         "$HOME/.config/aerospace"
         "$HOME/.config/yazi"
         "$HOME/.config/k9s"
+        "$HOME/.config/ghostty"
+        "$HOME/.config/karabiner"
+        "$HOME/.config/mise"
+        "$HOME/.config/starship.toml"
         "$HOME/.zshrc"
         "$HOME/.zshenv"
     )
@@ -270,11 +280,16 @@ cmd_uninstall() {
     
     # Remove symlinks
     local symlinks=(
+        "$HOME/.config/zsh"
         "$HOME/.config/zed"
         "$HOME/.config/aerospace"
         "$HOME/.config/nvim"
         "$HOME/.config/yazi"
         "$HOME/.config/k9s"
+        "$HOME/.config/ghostty"
+        "$HOME/.config/karabiner"
+        "$HOME/.config/mise"
+        "$HOME/.config/starship.toml"
     )
     
     for link in "${symlinks[@]}"; do

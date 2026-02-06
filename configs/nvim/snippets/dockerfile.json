@@ -1,50 +1,31 @@
 {
-  "fastapi cmd": {
-    "prefix": "fastapi",
+  "Python uv Dockerfile": {
+    "prefix": "dockerfile-uv",
     "body": [
-      "CMD [\"uvicorn\", \"src.main:app\", \"--proxy-headers\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"]"
-    ],
-    "description": "FastAPI CMD"
-  },
-  "Docker Python FastAPI with Poetry": {
-    "prefix": "docker-fastapi-poetry",
-    "body": [
-      "# Use official Python runtime as base image (matching pyproject.toml requirement)",
-      "FROM python:3.13-slim",
-      "# Set environment variables",
-      "ENV PYTHONUNBUFFERED=1 \\",
-      "    PYTHONDONTWRITEBYTECODE=1 \\",
-      "    POETRY_VERSION=1.8.3 \\",
-      "    POETRY_HOME=\"/opt/poetry\" \\",
-      "    POETRY_NO_INTERACTION=1 \\",
-      "    POETRY_VIRTUALENVS_IN_PROJECT=true \\",
-      "    POETRY_VIRTUALENVS_CREATE=true \\",
-      "    PYSETUP_PATH=\"/opt/pysetup\" \\",
-      "    VENV_PATH=\"/opt/pysetup/.venv\"",
-      "# Prepend poetry and venv to path",
-      "ENV PATH=\"\\$POETRY_HOME/bin:\\$VENV_PATH/bin:\\$PATH\"",
-      "# Set working directory",
-      "WORKDIR \\$PYSETUP_PATH",
-      "# Install system dependencies and Poetry",
-      "RUN apt-get update && apt-get install -y --no-install-recommends \\",
-      "    curl \\",
-      "    build-essential \\",
-      "    && curl -sSL https://install.python-poetry.org | python3 - \\",
-      "    && apt-get clean \\",
-      "    && rm -rf /var/lib/apt/lists/*",
-      "# Copy dependency files",
-      "COPY pyproject.toml ./",
-      "# Install dependencies (--only main for newer Poetry versions)",
-      "RUN poetry install --only main --no-root",
-      "# Set app working directory",
+      "FROM python:3.12-slim",
+      "",
+      "COPY --from=ghcr.io/astral-sh/uv:0.9.25 /uv /uvx /bin/",
+      "",
       "WORKDIR /app",
-      "# Copy application code",
-      "COPY . /app",
-      "# Expose port",
-      "EXPOSE 8000",
-      "# Run the application",
-      "CMD [\"fastapi\", \"run\", \"src/main.py\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]"
+      "",
+      "ENV PYTHONDONTWRITEBYTECODE=1",
+      "ENV PYTHONUNBUFFERED=1",
+      "ENV UV_LINK_MODE=copy",
+      "ENV UV_NO_DEV=1",
+      "",
+      "COPY pyproject.toml uv.lock* ./",
+      "",
+      "RUN --mount=type=cache,target=/root/.cache/uv \\",
+      "    uv sync --locked --no-install-project",
+      "",
+      "COPY . .",
+      "",
+      "RUN --mount=type=cache,target=/root/.cache/uv \\",
+      "    uv sync --locked",
+      "",
+      "ENV PATH=\"/app/.venv/bin:\\${PATH}\"",
+      "CMD [\"python\", \"main.py\"]"
     ],
-    "description": "Dockerfile for FastAPI application with Poetry dependency management"
+    "description": "Dockerfile for Python project using uv package manager"
   }
 }

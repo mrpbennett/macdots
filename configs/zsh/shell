@@ -1,5 +1,4 @@
 # Set complete path
-export PATH="./bin:$HOME/.local/bin:$HOME/.local/share/macdots/bin:$PATH"
-set +h
+export PATH="$HOME/.local/bin:$HOME/.local/share/macdots/bin:$HOME/go/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
-export forma_PATH="$HOME/.local/share/macdots"
+export MACDOTS_ROOT="$HOME/.local/share/macdots"
