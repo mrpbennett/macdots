@@ -1,5 +1,13 @@
 #!/bin/zsh
 
+set -euo pipefail
+
+# Skip if krew is already installed
+if command -v kubectl-krew >/dev/null 2>&1; then
+    echo "krew is already installed"
+    exit 0
+fi
+
 (
   set -x; cd "$(mktemp -d)" &&
   OS="$(uname | tr '[:upper:]' '[:lower:]')" &&

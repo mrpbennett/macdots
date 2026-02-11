@@ -9,13 +9,13 @@ if [[ -d "/Applications/Karabiner-Elements.app" ]] || command -v karabiner >/dev
     echo "Karabiner-Elements is already installed."
 
     # Copy configuration if it exists
-    if [[ -d ~/.local/share/macdots/configs/karabiner ]]; then
+    if [[ -d ~/.local/share/macdots/defaults/karabiner ]]; then
         echo "Installing Karabiner-Elements configuration..."
         mkdir -p ~/.config/karabiner
-        cp -R ~/.local/share/macdots/configs/karabiner/* ~/.config/karabiner/
+        cp -R ~/.local/share/macdots/defaults/karabiner/* ~/.config/karabiner/
         echo "Karabiner-Elements configuration installed successfully!"
     else
-        echo "No Karabiner-Elements configuration found in macdots configs, skipping..."
+        echo "No Karabiner-Elements configuration found in macdots defaults, skipping..."
     fi
 else
     echo "Karabiner-Elements not found. Downloading latest version..."
@@ -55,13 +55,13 @@ else
     echo "Karabiner-Elements has been successfully installed!"
 
     # Copy configuration if it exists
-    if [[ -d ~/.local/share/macdots/configs/karabiner ]]; then
+    if [[ -d ~/.local/share/macdots/defaults/karabiner ]]; then
         echo "Installing Karabiner-Elements configuration..."
         mkdir -p ~/.config/karabiner
-        cp -R ~/.local/share/macdots/configs/karabiner/* ~/.config/karabiner/
+        cp -R ~/.local/share/macdots/defaults/karabiner/* ~/.config/karabiner/
         echo "Karabiner-Elements configuration installed successfully!"
     else
-        echo "No Karabiner-Elements configuration found in macdots configs, skipping..."
+        echo "No Karabiner-Elements configuration found in macdots defaults, skipping..."
     fi
 
     echo "Note: You may need to grant accessibility permissions to Karabiner-Elements in System Settings > Privacy & Security > Accessibility"

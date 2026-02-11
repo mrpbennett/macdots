@@ -1,29 +1,37 @@
 # --- Taps ---
-tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/services"
-tap "hashicorp/tap"
 tap "homebrew/cask-fonts"
 tap "FelixKratz/formulae"
 
 # --- Terminal Tools ---
-brew "yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick font-symbols-only-nerd-font"
+brew "yazi"
+brew "ffmpeg"
+brew "sevenzip"
+brew "jq"
+brew "poppler"
+brew "fd"
+brew "ripgrep"
+brew "fzf"
+brew "zoxide"
+brew "resvg"
+brew "imagemagick"
+brew "font-symbols-only-nerd-font"
 brew "eza"
 brew "lazygit"
 brew "neovim"
 brew "bat"
+brew "carapace"
+brew "television"
+brew "starship"
+brew "btop"
+brew "zellij"
+brew "mise"
 
-brew "python"
-brew "pipx"
-
+# --- Kubernetes ---
 brew "kubectl"
 brew "derailed/k9s/k9s"
+brew "kubescape"
 brew "helm"
-
-brew "television"
-
-# --- Utils ---
-brew "borders"
+brew "siderolabs/tap/talosctl"
 
 # --- GUI apps (casks) ---
 cask "ghostty"

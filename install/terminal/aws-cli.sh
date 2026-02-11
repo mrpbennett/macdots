@@ -1,5 +1,13 @@
 #!/bin/zsh
 
+set -euo pipefail
+
+# Skip if credentials already exist (don't overwrite real credentials)
+if [[ -f ~/.aws/credentials ]]; then
+    echo "AWS credentials already exist, skipping AWS CLI credential setup"
+    exit 0
+fi
+
 # Download AWS CLI
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 
