@@ -18,9 +18,17 @@ alias dt="cd ~/Desktop"
 
 # Tools
 v() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
+
+alias e="exit"
+alias v="nvim"
+alias bt="btop"
+jlias t="tmux"
+
 alias lzg='lazygit'
 alias lzd='lazydocker'
+
 alias zj="zellij"
+alias zjd="zellij --layout ~/.config/zellij/layouts/desktop.kdl"
 
 # Yazi
 function y() {

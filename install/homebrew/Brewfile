@@ -17,6 +17,7 @@ brew "imagemagick"
 brew "font-symbols-only-nerd-font"
 brew "eza"
 brew "lazygit"
+brew "lazydocker"
 brew "bat"
 brew "carapace"
 brew "television"
@@ -32,12 +33,15 @@ brew "neovim"
 brew "helix"
 cask "zed"
 
-# --- Kubernetes ---
+# --- Kubernetes & DevOps ---
 brew "kubectl"
 brew "derailed/k9s/k9s"
 brew "kubescape"
 brew "helm"
+brew "argocd"
 brew "siderolabs/tap/talosctl"
+brew "hashicorp/tap/vault"
+brew "hashicorp/tap/terraform"
 
 # --- GUI apps (casks) ---
 cask "ghostty"

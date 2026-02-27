@@ -1,3 +1,4 @@
 source ~/.local/share/macdots/defaults/zsh/shell
 source ~/.local/share/macdots/defaults/zsh/aliases
+source ~/.local/share/macdots/defaults/zsh/tmux
 source ~/.local/share/macdots/defaults/zsh/init
