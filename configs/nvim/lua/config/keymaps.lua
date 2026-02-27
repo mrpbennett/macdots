@@ -7,7 +7,7 @@ vim.keymap.set("i", "jk", "<Esc>", { noremap = false })
 vim.keymap.set("n", "aa", "A", { noremap = false }) -- Pressing 'aa' in normal mode will take you to the end of the line in insert mode
 
 -- autoindent in insert mode
-vim.keymap.set("i", "<CR", "<C-o>0<CR>", { noremap = true })
+vim.keymap.set("i", "<CR>", "<C-o>0<CR>", { noremap = true })
 
 -- Move current line or selected block down/up in normal and visual modes
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })

@@ -2,4 +2,4 @@
 export PATH="./bin:$HOME/.local/bin:$HOME/.local/share/macdots/bin:$PATH"
 set +h
 
-export forma_PATH="$HOME/.local/share/macdots"
+export MACDOTS_PATH="$HOME/.local/share/macdots"

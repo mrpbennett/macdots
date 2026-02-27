@@ -3,8 +3,7 @@ alias ls='eza -lh --group-directories-first --icons=auto'
 alias lsa='ls -a'
 alias lt='eza --tree --level=2 --long --icons --git'
 alias lta='lt -a'
-alias ff="fzf --preview 'batcat --style=numbers --color=always {}'"
-alias fd='fdfind'
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
 alias cd='z'
 
 # Directories
@@ -19,9 +18,37 @@ alias dt="cd ~/Desktop"
 
 # Tools
 v() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
-alias bat='batcat'
+
+alias e="exit"
+alias v="nvim"
+alias bt="btop"
+jlias t="tmux"
+
 alias lzg='lazygit'
 alias lzd='lazydocker'
+
+alias zj="zellij"
+alias zjd="zellij --layout ~/.config/zellij/layouts/desktop.kdl"
+
+# Yazi
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+# Poetry
+alias pa="poetry add $1"
+alias pr"poetry run python $1"
+alias pi="poetry install"
+
+# UV
+alias ui="uv init"
+alias ua="uv add $1"
+alias us="uv sync"
+alias ur="uv run $1"
 
 # Git
 alias g='git'
@@ -43,12 +70,13 @@ alias gre='git reset'
 
 # Docker
 alias d='docker'
-alias dco="docker compose"
+alias dc="docker compose"
 alias dps="docker ps"
 alias dpa="docker ps -a"
 alias dl="docker ps -l -q"
 alias dx="docker exec -it"
 
+# Kubernetes
 alias k="kubectl"
 alias ka="kubectl apply -f"
 alias kg="kubectl get"
@@ -59,7 +87,18 @@ alias kgpo="kubectl get pod"
 alias kgd="kubectl get deployments"
 alias kc="kubectx"
 alias kns="kubens"
-alias kl="kubectl logs -f"
+alias klf="kubectl logs -f"
 alias ke="kubectl exec -it"
 alias kcns='kubectl config set-context --current --namespace'
 alias kw-token="cat ~/.kube/cache/oidc-login/lga-dm-dev/* | jq -r '.id_token'"
+alias kc="kubectl config"
+alias kctx="kubectl config get-contexts"
+alias kuctx="kubectl config use-context $1"
+
+# Helm
+alias hrl="helm repo list"
+alias hru="helm repo update"
+alias hsr="helm search repo ''"
+hsv() {
+  helm show values "$@" | bat -l yaml
+}

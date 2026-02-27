@@ -16,7 +16,7 @@ if ! git clone https://github.com/mrpbennett/macdots.git ~/.local/share/macdots;
 fi
 if [[ $macdots_REF != "master" ]]; then
 	cd ~/.local/share/macdots
-	git fetch origin "${macdots_REF:-stable}" && git checkout "${macdots_REF:-stable}"
+	git fetch origin "${macdots_REF:-main}" && git checkout "${macdots_REF:-main}"
 	cd -
 fi
 
